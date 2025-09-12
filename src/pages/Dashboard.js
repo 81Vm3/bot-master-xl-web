@@ -12,10 +12,63 @@ const Dashboard = () => {
   const [runtimeData, setRuntimeData] = React.useState(null);
   const [botStats, setBotStats] = React.useState(null);
   const [serverStats, setServerStats] = React.useState(null);
+  const [currentUptime, setCurrentUptime] = React.useState(null);
 
   React.useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  React.useEffect(() => {
+    let interval;
+    console.log('Runtime data in useEffect:', runtimeData); // Debug log
+    
+    if (runtimeData) {
+      // Try different possible fields for start time or uptime
+      let baseUptimeSeconds = null;
+      
+      if (runtimeData.uptime) {
+        baseUptimeSeconds = runtimeData.uptime;
+      } else if (runtimeData.start_time) {
+        const startTime = new Date(runtimeData.start_time).getTime();
+        baseUptimeSeconds = Math.floor((Date.now() - startTime) / 1000);
+      } else if (runtimeData.uptime_seconds) {
+        baseUptimeSeconds = runtimeData.uptime_seconds;
+      }
+      
+      console.log('Base uptime seconds:', baseUptimeSeconds); // Debug log
+      
+      if (baseUptimeSeconds !== null) {
+        const startTime = Date.now() - (baseUptimeSeconds * 1000);
+        
+        interval = setInterval(() => {
+          const now = Date.now();
+          const uptimeMs = now - startTime;
+          const seconds = Math.floor(uptimeMs / 1000);
+          const minutes = Math.floor(seconds / 60);
+          const hours = Math.floor(minutes / 60);
+          const days = Math.floor(hours / 24);
+          
+          const uptimeString = (() => {
+            const parts = [];
+            if (days > 0) parts.push(`${days}d`);
+            if (hours % 24 > 0) parts.push(`${hours % 24}h`);
+            if (minutes % 60 > 0) parts.push(`${minutes % 60}m`);
+            if (seconds % 60 > 0 || parts.length === 0) parts.push(`${seconds % 60}s`);
+            return parts.join(' ');
+          })();
+          
+          setCurrentUptime({
+            uptime_string: uptimeString,
+            formatted: { days }
+          });
+        }, 1000);
+      }
+    }
+    
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [runtimeData]);
 
   const fetchDashboardData = async () => {
     setLoading(true);
@@ -27,6 +80,7 @@ const Dashboard = () => {
       ]);
 
       if (runtime.success) {
+        console.log('Runtime data:', runtime.data); // Debug log
         setRuntimeData(runtime.data);
       }
       if (bots.success) {
@@ -59,10 +113,10 @@ const Dashboard = () => {
     },
     {
       title: t('dashboard.systemUptime'),
-      value: runtimeData?.uptime_string || t('common.loading'),
+      value: currentUptime?.uptime_string || runtimeData?.uptime_string || t('common.loading'),
       icon: <IconActivity size="large" />,
       color: '#43e97b',
-      subtitle: t('dashboard.runningFor', { days: runtimeData?.formatted?.days || 0 }),
+      subtitle: t('dashboard.runningFor', { days: currentUptime?.formatted?.days || runtimeData?.formatted?.days || 0 }),
     },
   ];
 

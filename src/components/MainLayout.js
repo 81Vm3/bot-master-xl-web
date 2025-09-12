@@ -57,7 +57,7 @@ const MainLayout = () => {
           backgroundColor: 'var(--semi-color-bg-1)',
           borderRight: '1px solid var(--semi-color-border)',
         }}
-        breakpoint="lg"
+        breakpoint={["lg"]}
         collapsedWidth={60}
         collapsed={collapsed}
         onCollapse={setCollapsed}
