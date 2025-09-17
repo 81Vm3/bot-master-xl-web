@@ -1,9 +1,9 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:7070');
 
 class LLMProviderService {
   async listProviders() {
     try {
-      const response = await fetch(`${API_BASE_URL}/llm/list`, {
+      const response = await fetch(`${API_BASE_URL}/api/llm/list`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -32,7 +32,7 @@ class LLMProviderService {
         model: providerData.model
       };
 
-      const response = await fetch(`${API_BASE_URL}/llm/create`, {
+      const response = await fetch(`${API_BASE_URL}/api/llm/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -61,7 +61,7 @@ class LLMProviderService {
       if (providerData.api_key !== undefined) backendData.api_key = providerData.api_key;
       if (providerData.model) backendData.model = providerData.model;
 
-      const response = await fetch(`${API_BASE_URL}/llm/update`, {
+      const response = await fetch(`${API_BASE_URL}/api/llm/update`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ class LLMProviderService {
 
   async deleteProvider(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/llm/delete`, {
+      const response = await fetch(`${API_BASE_URL}/api/llm/delete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,7 +105,7 @@ class LLMProviderService {
 
   async getProvider(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/llm/get?id=${id}`, {
+      const response = await fetch(`${API_BASE_URL}/api/llm/get?id=${id}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

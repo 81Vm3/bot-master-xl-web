@@ -22,7 +22,9 @@
     "description": "Description",
     "type": "Type",
     "name": "Name",
-    "required": "Required"
+    "required": "Required",
+    "yes": "Yes",
+    "no": "No"
   },
   "dashboard": {
     "title": "Dashboard",
@@ -41,7 +43,11 @@
     "memoryUsage": "Memory Usage",
     "diskUsage": "Disk Usage",
     "networkIO": "Network I/O",
-    "viewLogs": "View Logs"
+    "viewLogs": "View Logs",
+    "systemUptime": "System Uptime",
+    "runningFor": "Running for {{days}} days",
+    "botStats": "{{connected}} connected, {{disconnected}} disconnected",
+    "serverStats": "{{online}} online, {{offline}} offline"
   },
   "servers": {
     "title": "Server Management",
@@ -73,6 +79,7 @@
     "serverAdded": "Server added successfully",
     "serverDeleted": "Server deleted successfully",
     "serverRefreshed": "Server list refreshed",
+    "refreshServer": "Refresh Server",
     "failedToAdd": "Failed to add server",
     "failedToDelete": "Failed to delete server",
     "unnamedServer": "Unnamed Server",
@@ -193,6 +200,8 @@
     "updateSystemPrompt": "Update System Prompt",
     "enterSystemPromptForBot": "Enter system prompt for this bot",
     "systemPromptRequired": "System prompt is required",
+    "selectLLMProviderOptional": "Select LLM Provider (Optional)",
+    "enterPasswordOptional": "Enter password (optional)",
     "reconnectBot": "Reconnect Bot",
     "llmSession": "LLM Session",
     "createdAt": "Created At",
@@ -217,7 +226,8 @@
     "batchCreateFailed": "Failed to create {{count}} bots",
     "batchCreateError": "Failed to create bots",
     "server_id": "Server ID",
-    "serverRequired": "Server is required"
+    "serverRequired": "Server is required",
+    "uuid": "UUID"
   },
   "app": {
     "title": "BotMasterXL"

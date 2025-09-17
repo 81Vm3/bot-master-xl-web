@@ -14,6 +14,14 @@ const Dashboard = () => {
   const [serverStats, setServerStats] = React.useState(null);
   const [currentUptime, setCurrentUptime] = React.useState(null);
 
+  const formatUptime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    
+    return `${days}d ${hours % 24}h ${minutes % 60}m ${seconds % 60}s`;
+  };
+
   React.useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -48,14 +56,7 @@ const Dashboard = () => {
           const hours = Math.floor(minutes / 60);
           const days = Math.floor(hours / 24);
           
-          const uptimeString = (() => {
-            const parts = [];
-            if (days > 0) parts.push(`${days}d`);
-            if (hours % 24 > 0) parts.push(`${hours % 24}h`);
-            if (minutes % 60 > 0) parts.push(`${minutes % 60}m`);
-            if (seconds % 60 > 0 || parts.length === 0) parts.push(`${seconds % 60}s`);
-            return parts.join(' ');
-          })();
+          const uptimeString = `${days}d ${hours % 24}h ${minutes % 60}m ${seconds % 60}s`;
           
           setCurrentUptime({
             uptime_string: uptimeString,
@@ -113,7 +114,7 @@ const Dashboard = () => {
     },
     {
       title: t('dashboard.systemUptime'),
-      value: currentUptime?.uptime_string || runtimeData?.uptime_string || t('common.loading'),
+      value: currentUptime?.uptime_string || (runtimeData?.uptime ? formatUptime(runtimeData.uptime) : runtimeData?.uptime_string) || t('common.loading'),
       icon: <IconActivity size="large" />,
       color: '#43e97b',
       subtitle: t('dashboard.runningFor', { days: currentUptime?.formatted?.days || runtimeData?.formatted?.days || 0 }),

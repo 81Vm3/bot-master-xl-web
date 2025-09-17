@@ -1,10 +1,11 @@
 import React from 'react';
-import { Card, Table, Button, Space, Tag, Typography, Modal, Form, Select, Toast, Spin, InputNumber } from '@douyinfe/semi-ui';
-import { IconPlus, IconEdit, IconDelete, IconPlay, IconStop, IconRefresh, IconLock, IconCopy, IconSetting } from '@douyinfe/semi-icons';
+import { Card, Table, Button, Space, Tag, Typography, Modal, Form, Select, Toast, Spin } from '@douyinfe/semi-ui';
+import { IconPlus, IconEdit, IconDelete, IconRefresh, IconLock, IconCopy } from '@douyinfe/semi-icons';
 import { useTranslation } from 'react-i18next';
 import botService from '../services/botService';
 import serverService from '../services/serverService';
 import llmProviderService from '../services/llmProviderService';
+import { ReactComponent as AIBrainIcon } from '../assets/icons/ai.svg';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -73,7 +74,7 @@ const BotManagement = () => {
       render: (text) => <strong>{text}</strong>,
     },
     {
-      title: 'UUID',
+      title: t('bots.uuid'),
       dataIndex: 'uuid',
       key: 'uuid',
       render: (uuid) => <code style={{ fontSize: '12px' }}>{uuid?.substring(0, 8)}...</code>,
@@ -83,35 +84,41 @@ const BotManagement = () => {
       dataIndex: 'server_id',
       key: 'server_id',
       render: (server_id) => {
-        if (server_id === 0) return 'No Server';
+        if (server_id === 0) return t('bots.noServer');
         const server = servers.find(s => s.id === server_id);
-        return server ? `${server.host}:${server.port}` : `Server ID: ${server_id}`;
+        return server ? `${server.host}:${server.port}` : `${t('servers.server')} ID: ${server_id}`;
       },
     },
     {
-      title: 'Invulnerable',
+      title: t('bots.invulnerable'),
       dataIndex: 'invulnerable',
       key: 'invulnerable',
       render: (invulnerable) => (
         <Tag color={invulnerable ? 'green' : 'red'}>
-          {invulnerable ? 'Yes' : 'No'}
+          {invulnerable ? t('common.yes') : t('common.no')}
         </Tag>
       ),
     },
     {
-      title: 'LLM Session',
+      title: t('bots.llmSession'),
       key: 'llm_session',
       render: (_, record) => (
         <Tag color={record.has_llm_session ? 'green' : 'red'}>
-          {record.has_llm_session ? 'Active' : 'Inactive'}
+          {record.has_llm_session ? t('bots.llmSessionActive') : t('bots.llmSessionInactive')}
         </Tag>
       ),
     },
     {
-      title: 'Created At',
+      title: t('bots.createdAt'),
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (date) => new Date(date).toLocaleString(),
+      render: (date) => {
+        const dateObj = new Date(date);
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}/${month}/${day}`;
+      },
     },
     {
       title: t('bots.actions'),
@@ -122,26 +129,26 @@ const BotManagement = () => {
             theme="borderless"
             icon={<IconRefresh />}
             onClick={() => handleReconnect(record.uuid)}
-            title="Reconnect Bot"
+            title={t('bots.reconnectBot')}
           />
           <Button
             theme="borderless"
             icon={<IconLock />}
             onClick={() => handleSetPassword(record)}
-            title="Set Password"
+            title={t('bots.setPassword')}
           />
           <Button
             theme="borderless"
-            icon={<IconSetting />}
+            icon={<AIBrainIcon style={{ width: '26px', height: '26px' }} />}
             onClick={() => handleLLMSession(record)}
-            title="Manage LLM Session"
+            title={t('bots.manageLLMSession')}
             type={record.has_llm_session ? "warning" : "primary"}
           />
           <Button
             theme="borderless"
             icon={<IconEdit />}
             onClick={() => handleUpdatePrompt(record)}
-            title="Update System Prompt"
+            title={t('bots.updateSystemPrompt')}
           />
           <Button
             theme="borderless"
@@ -285,7 +292,9 @@ const BotManagement = () => {
           values.name,
           values.server_id || 0,
           values.invulnerable || false,
-          values.system_prompt || ''
+          values.system_prompt || '',
+          values.password || '',
+          values.llm_provider_id || -1
         );
         
         if (response.success) {
@@ -369,7 +378,9 @@ const BotManagement = () => {
             botName,
             botConfig.server_id || 0,
             botConfig.invulnerable || false,
-            botConfig.system_prompt || ''
+            botConfig.system_prompt || '',
+            botConfig.password || '',
+            botConfig.llm_provider_id || -1
           )
         );
       }
@@ -473,6 +484,27 @@ const BotManagement = () => {
             field="invulnerable"
             label={t('bots.invulnerable')}
           />
+
+          <Form.Input
+            field="password"
+            label={t('bots.password')}
+            placeholder={t('bots.enterPasswordOptional')}
+            type="password"
+          />
+
+          <Form.Select
+            field="llm_provider_id"
+            label={t('llm.provider')}
+            placeholder={t('bots.selectLLMProviderOptional')}
+            style={{ width: '100%' }}
+            allowClear
+          >
+            {llmProviders.map(provider => (
+              <Option key={provider.id} value={provider.id}>
+                {provider.name} ({provider.model})
+              </Option>
+            ))}
+          </Form.Select>
 
           <Form.TextArea
             field="system_prompt"
@@ -589,6 +621,27 @@ const BotManagement = () => {
             field="invulnerable"
             label={t('bots.invulnerable')}
           />
+
+          <Form.Input
+            field="password"
+            label={t('bots.password')}
+            placeholder={t('bots.enterPasswordOptional')}
+            type="password"
+          />
+
+          <Form.Select
+            field="llm_provider_id"
+            label={t('llm.provider')}
+            placeholder={t('bots.selectLLMProviderOptional')}
+            style={{ width: '100%' }}
+            allowClear
+          >
+            {llmProviders.map(provider => (
+              <Option key={provider.id} value={provider.id}>
+                {provider.name} ({provider.model})
+              </Option>
+            ))}
+          </Form.Select>
 
           <Form.TextArea
             field="system_prompt"

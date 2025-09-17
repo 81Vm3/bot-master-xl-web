@@ -1,9 +1,9 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:7070');
 
 class DashboardService {
   async getRuntime() {
     try {
-      const response = await fetch(`${API_BASE_URL}/dashboard/runtime`, {
+      const response = await fetch(`${API_BASE_URL}/api/dashboard/runtime`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -24,7 +24,7 @@ class DashboardService {
 
   async getBotStats() {
     try {
-      const response = await fetch(`${API_BASE_URL}/dashboard/bot_stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/dashboard/bot_stats`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ class DashboardService {
 
   async getServerStats() {
     try {
-      const response = await fetch(`${API_BASE_URL}/dashboard/server_stats`, {
+      const response = await fetch(`${API_BASE_URL}/api/dashboard/server_stats`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

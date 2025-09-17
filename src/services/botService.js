@@ -1,9 +1,9 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL;
+const API_BASE_URL = process.env.REACT_APP_API_URL || (process.env.NODE_ENV === 'production' ? '' : 'http://localhost:7070');
 
 class BotService {
   async listBots() {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/list`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/list`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -22,19 +22,26 @@ class BotService {
     }
   }
 
-  async createBot(name, server_id = 0, invulnerable = false, system_prompt = '') {
+  async createBot(name, server_id = 0, invulnerable = false, system_prompt = '', password = '', llm_provider_id = -1) {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/create`, {
+      const requestBody = { 
+        name, 
+        server_id, 
+        invulnerable, 
+        system_prompt,
+        password
+      };
+
+      if (llm_provider_id > 0) {
+        requestBody.llm_provider_id = llm_provider_id;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/bot/create`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          name, 
-          server_id, 
-          invulnerable, 
-          system_prompt 
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       if (!response.ok) {
@@ -51,7 +58,7 @@ class BotService {
 
   async deleteBot(uuid) {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/delete`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/delete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +80,7 @@ class BotService {
 
   async setPassword(uuid, password) {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/set_password`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/set_password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -95,7 +102,7 @@ class BotService {
 
   async reconnectBot(uuid) {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/reconnect`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/reconnect`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -117,7 +124,7 @@ class BotService {
 
   async enableLLMSession(uuid, provider_id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/enable_llm`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/enable_llm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +146,7 @@ class BotService {
 
   async disableLLMSession(uuid) {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/disable_llm`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/disable_llm`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -161,7 +168,7 @@ class BotService {
 
   async updateSystemPrompt(uuid, system_prompt) {
     try {
-      const response = await fetch(`${API_BASE_URL}/bot/update_prompt`, {
+      const response = await fetch(`${API_BASE_URL}/api/bot/update_prompt`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

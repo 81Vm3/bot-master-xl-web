@@ -22,7 +22,9 @@
     "description": "描述",
     "type": "类型",
     "name": "名称",
-    "required": "必填"
+    "required": "必填",
+    "yes": "是",
+    "no": "否"
   },
   "dashboard": {
     "title": "管理面板",
@@ -122,6 +124,8 @@
     "updateSystemPrompt": "更新系统提示",
     "enterSystemPromptForBot": "输入此机器人的系统提示",
     "systemPromptRequired": "系统提示为必填项",
+    "selectLLMProviderOptional": "选择 LLM 提供商（可选）",
+    "enterPasswordOptional": "输入密码（可选）",
     "reconnectBot": "重新连接机器人",
     "llmSession": "LLM 会话",
     "createdAt": "创建于",
@@ -146,7 +150,8 @@
     "batchCreateFailed": "无法创建 {{count}} 个机器人",
     "batchCreateError": "无法创建机器人",
     "serverRequired": "服务器为必填项",
-    "unnamedServer": "未命名服务器"
+    "unnamedServer": "未命名服务器",
+    "uuid": "UUID"
   },
   "servers": {
     "title": "服务器管理",
@@ -178,6 +183,7 @@
     "serverAdded": "服务器添加成功",
     "serverDeleted": "服务器删除成功",
     "serverRefreshed": "服务器列表已刷新",
+    "refreshServer": "刷新服务器",
     "failedToAdd": "添加服务器失败",
     "failedToDelete": "删除服务器失败",
     "unnamedServer": "未命名服务器",

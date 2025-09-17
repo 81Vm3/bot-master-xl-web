@@ -11,6 +11,7 @@ const ServerManagement = () => {
   const { t } = useTranslation();
   const [servers, setServers] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [refreshingServers, setRefreshingServers] = React.useState(new Set());
   const [modalVisible, setModalVisible] = React.useState(false);
   const [editingServer, setEditingServer] = React.useState(null);
 
@@ -99,11 +100,13 @@ const ServerManagement = () => {
       key: 'actions',
       render: (_, record) => (
         <Space>
-          <Button
+          {/* <Button
             theme="borderless"
             icon={<IconRefresh />}
+            loading={refreshingServers.has(record.id)}
             onClick={() => handleRefresh(record.id)}
-          />
+            title={t('servers.refreshServer')}
+          /> */}
           <Button
             theme="borderless"
             type="danger"
@@ -115,9 +118,45 @@ const ServerManagement = () => {
     },
   ];
 
-  const handleRefresh = async (id) => {
-    await fetchServers();
-    Toast.success(t('servers.serverRefreshed'));
+  const handleRefresh = async (server_id) => {
+    // Add server to refreshing set
+    setRefreshingServers(prev => new Set([...prev, server_id]));
+    
+    try {
+      console.log('Starting refresh for server:', server_id);
+      const response = await serverService.queryServer(server_id);
+      console.log('Got response:', response);
+      
+      if (response && response.success) {
+        Toast.success(response.message || 'Server query initiated successfully');
+        // Optionally refresh the server list after a short delay to show updated data
+        setTimeout(() => {
+          fetchServers();
+        }, 2000);
+      } else if (response) {
+        Toast.error(response.message || 'Failed to query server');
+      } else {
+        Toast.error('Unexpected response format');
+      }
+    } catch (error) {
+      console.error('HandleRefresh caught error:', error);
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        Toast.error('Network error: Unable to connect to server');
+      } else {
+        Toast.error('Failed to refresh server: ' + error.message);
+      }
+    } finally {
+      // Remove server from refreshing set
+      setRefreshingServers(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(server_id);
+        return newSet;
+      });
+    }
   };
 
   const handleDelete = async (id) => {

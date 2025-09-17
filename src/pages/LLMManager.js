@@ -69,7 +69,7 @@ const LLMManager = () => {
       key: 'api_key',
       render: (apiKey) => (
         <span style={{ fontFamily: 'monospace', fontSize: '12px' }}>
-          {apiKey ? '••••••••••••' + apiKey.slice(-4) : t('llm.notSet')}
+          {apiKey ? '************' + apiKey.slice(-4) : t('llm.notSet')}
         </span>
       ),
     },
@@ -77,7 +77,14 @@ const LLMManager = () => {
       title: t('llm.createdAt'),
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (date) => date ? new Date(date).toLocaleDateString() : 'N/A',
+      render: (date) => {
+        if (!date) return 'N/A';
+        const dateObj = new Date(date);
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const day = String(dateObj.getDate()).padStart(2, '0');
+        return `${year}/${month}/${day}`;
+      },
     },
     {
       title: t('llm.actions'),
