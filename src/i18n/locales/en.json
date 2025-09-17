@@ -159,7 +159,7 @@
     "botNameRequired": "Bot name is required",
     "botTypeRequired": "Please select bot type",
     "batchAdd": "Batch Add",
-    "selectServer": "Select Server (Optional)",
+    "selectServer": "Select Server",
     "noServer": "No Server",
     "invulnerable": "Invulnerable",
     "systemPrompt": "System Prompt",
